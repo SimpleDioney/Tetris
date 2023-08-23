@@ -1,3 +1,10 @@
+.cell-shadow {
+  background-color: rgba(0, 0, 0, 0.2);
+  /* Cor da sombra meio transparente */
+}
+
+
+
 body {
   background: #f9f9f9;
   display: flex;
