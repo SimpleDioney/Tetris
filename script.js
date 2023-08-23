@@ -1,5 +1,3 @@
-
-
 let speed = 500;
 let level = 1;
 let gameInterval;
@@ -30,18 +28,49 @@ function randomPiece() {
   return pieces[Math.floor(Math.random() * pieces.length)];
 }
 
+function getShadowY() {
+  let shadowY = pieceY;
+  while (true) {
+    shadowY++;
+    let collisionDetected = false;
+    for (let y = 0; y < currentPiece.shape.length; y++) {
+      for (let x = 0; x < currentPiece.shape[y].length; x++) {
+        if (currentPiece.shape[y][x]) {
+          let newX = x + pieceX;
+          let newY = y + shadowY;
+          if (newX < 0 || newX >= cols || newY < 0 || newY >= rows || board[newY][newX] !== 0) {
+            collisionDetected = true;
+            break;
+          }
+        }
+      }
+      if (collisionDetected) break;
+    }
+    if (collisionDetected) break;
+  }
+  return shadowY - 1;
+}
+
+
+
 function drawBoard() {
   game.innerHTML = '';
+  let shadowY = getShadowY();
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
       const cell = document.createElement('div');
       cell.className = 'cell';
       cell.style.left = `${x * 20}px`;
       cell.style.top = `${y * 20}px`;
+
       if (y >= pieceY && y < pieceY + currentPiece.shape.length &&
         x >= pieceX && x < pieceX + currentPiece.shape[0].length &&
         currentPiece.shape[y - pieceY][x - pieceX]) {
         cell.style.background = currentPiece.color;
+      } else if (y >= shadowY && y < shadowY + currentPiece.shape.length &&
+        x >= pieceX && x < pieceX + currentPiece.shape[0].length &&
+        currentPiece.shape[y - shadowY][x - pieceX]) {
+        cell.className += ' cell-shadow'; // Add shadow class
       } else {
         cell.style.background = board[y][x] ? board[y][x] : 'white';
       }
@@ -148,8 +177,11 @@ function mergePiece() {
 
 function gameOver() {
   clearInterval(gameInterval);
+  document.getElementById('final-score').innerText = `Pontuação Final: ${score}`; // Adicione esta linha
   document.getElementById('game-over-screen').style.display = 'flex';
 }
+
+
 
 document.getElementById('restart-button').addEventListener('click', function() {
   // Reinicialize todas as variáveis do jogo
